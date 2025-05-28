@@ -277,10 +277,3 @@ pet_care_notes(kucing_domestik) :- write('  Catatan: Butuh vaksinasi rutin, litt
 pet_care_notes(anjing_golden_retriever) :- write('  Catatan: Butuh latihan fisik dan mental harian, grooming rutin, rentan masalah sendi.').
 pet_care_notes(anjing_beagle) :- write('  Catatan: Butuh latihan intensif, pagar yang aman (suka kabur), cenderung berisik.').
 pet_care_notes(_) :- !.
-
-% ===================================================================
-% CARA MENJALANKAN:
-% 1. Buka SWI-Prolog.
-% 2. Muat file ini: consult('pilih_hewan.pl').
-% 3. Jalankan konsultasi: go.
-% ===================================================================
