@@ -1,22 +1,8 @@
-% ===================================================================
-% SISTEM PAKAR REKOMENDASI HEWAN PELIHARAAN
-% MATA KULIAH: KECERDASAN BUATAN DAN PEMBELAJARAN MESIN
-% PROLOG (SWI-PROLOG)
-% ===================================================================
-
 :- use_module(library(lists)).
 :- use_module(library(random)).
-% Baris berikut mungkin diperlukan jika string_trim tidak otomatis tersedia
-% :- use_module(library(apply)). % Untuk beberapa versi Prolog lama
-% :- use_module(library(strings)). % Untuk string_trim/2 jika terpisah
 
 :- dynamic(yes/1).
 :- dynamic(no/1).
-
-% ===================================================================
-% DATABASE ATURAN HEWAN 
-% pet_rule(NamaHewan, IDAturan, DaftarKriteria).
-% ===================================================================
 
 pet_rule(hamster, cocok_apartemen_sibuk,
     [ukuran_tempat_tinggal_apartemen, waktu_luang_sedikit, anggaran_bulanan_rendah,
@@ -89,10 +75,6 @@ pet_rule(leopard_gecko, reptil_pemula_nokturnal_tenang,
     [ukuran_tempat_tinggal_apartemen, waktu_luang_sedikit, anggaran_bulanan_rendah, interaksi_rendah,
      komitmen_jangka_panjang, ukuran_hewan_kecil, sifat_aktif_malam]).
 
-% ===================================================================
-% HEWAN FALLBACK DAN JUSTIFIKASI
-% fallback_pet_justification(NamaHewan, IDAturanFallback, JustifikasiTeksList).
-% ===================================================================
 fallback_pet_justification(ikan_cupang, fallback_cupang,
     ['Perawatan relatif rendah dan tidak membutuhkan banyak ruang.',
      'Visualnya menarik dan dapat menjadi hiasan yang indah.',
@@ -110,11 +92,6 @@ fallback_pet_justification(kura_kura, fallback_kura_kura,
      'Merupakan hewan yang tenang dan tidak berisik.',
      'Perawatannya bisa sederhana jika habitatnya sudah disiapkan dengan benar.']).
 
-
-% ===================================================================
-% MEKANISME VERIFIKASI DAN REKOMENDASI
-% ===================================================================
-
 verify_all([]).
 verify_all([Criterion|Criteria]) :-
     verify(Criterion),
@@ -129,10 +106,6 @@ map_criteria_to_text([], []).
 map_criteria_to_text([CritAtom|RestAtoms], [CritText|RestTexts]) :-
     (criteria_explanation_text(CritAtom, Text) -> CritText = Text ; CritText = CritAtom),
     map_criteria_to_text(RestAtoms, RestTexts).
-
-% ===================================================================
-% MEKANISME INTERAKSI PENGGUNA
-% ===================================================================
 
 ask_choice(Question, Options, Chosen) :-
     nl, write(Question), nl,
@@ -151,20 +124,10 @@ ask_choice(Question, Options, Chosen) :-
         ask_choice(Question, Options, Chosen)
     ).
 
-% --- perbaikan ---
 ask_yes_no(Question, Symptom) :-
-    format('~w? (y/n) ~n', [Question]), % Cetak pertanyaan, prompt (y/n), DAN LANGSUNG NEWLINE
-    flush_output,                      % Pastikan semua yang di atas tercetak
-    % Pengguna sekarang akan mengetik input di baris baru yang bersih
+    format('~w? (y/n) ~n', [Question]), 
+    flush_output,                      
     read_line_to_string(user_input, R_Str_With_Newline),
-    % string_trim/2 akan menghapus whitespace di awal/akhir, termasuk newline dari Enter
-    % Jika SWI-Prolog versi lama dan string_trim tidak ada, baris di bawah bisa diganti dengan:
-    % ( sub_string(R_Str_With_Newline, 0, _, 1, Temp_R_Str) -> % ambil semua kecuali mungkin newline di akhir
-    %   ( sub_string(Temp_R_Str, _, 1, 0, Trimmed_R_Str) ; Trimmed_R_Str = Temp_R_Str ) % Hapus newline jika ada
-    % ; Trimmed_R_Str = R_Str_With_Newline % Fallback
-    % ),
-    % Untuk SWI-Prolog modern, string_trim seharusnya ada di library(strings) atau built-in.
-    % Jika Anda tidak yakin, coba muat library(strings) di awal.
     ( current_predicate(string_trim/2) ->
         string_trim(R_Str_With_Newline, Trimmed_R_Str)
     ;   % Fallback jika string_trim tidak ada (misalnya, versi Prolog sangat lama)
@@ -182,7 +145,6 @@ ask_yes_no(Question, Symptom) :-
         write('-----------------------------------------------------'), nl,
         ask_yes_no(Question, Symptom)
     ).
-% ------
 
 
 display_options([], _).
@@ -193,7 +155,6 @@ display_options([H|T], N) :-
     N1 is N + 1,
     display_options(T, N1).
 
-% --- TEKS UNTUK OPSI PILIHAN ---
 option_text(pengguna_adalah_pemula, 'Ya, saya seorang pemula').
 option_text(pengguna_bukan_pemula, 'Tidak, saya bukan pemula (berpengalaman)').
 
@@ -264,10 +225,6 @@ verify(Criteria) :-
      )
     ).
 
-% ===================================================================
-% DAFTAR PERTANYAAN (MAPPING KRITERIA KE PERTANYAAN)
-% ===================================================================
-
 question_text(pengalaman, 'Apakah Anda seorang pemula dalam merawat hewan?').
 question_text(muslim, 'Apakah Anda seorang Muslim? (Penting untuk rekomendasi jenis hewan tertentu)').
 question_text(tipe_tempat_tinggal, 'Apa tipe tempat tinggal Anda?').
@@ -334,7 +291,6 @@ criteria_question(ukuran_hewan_kecil, choice, Q, [ukuran_hewan_kecil, ukuran_hew
 criteria_question(ukuran_hewan_sedang, choice, Q, [ukuran_hewan_kecil, ukuran_hewan_sedang, ukuran_hewan_besar]) :- question_text(ukuran_hewan, Q).
 criteria_question(ukuran_hewan_besar, choice, Q, [ukuran_hewan_kecil, ukuran_hewan_sedang, ukuran_hewan_besar]) :- question_text(ukuran_hewan, Q).
 
-% Pertanyaan Yes/No
 criteria_question(sifat_mandiri, yes_no, 'Apakah Anda mencari hewan yang cenderung mandiri dan tidak selalu butuh perhatian Anda', _).
 criteria_question(sifat_aktif_malam, yes_no, 'Apakah Anda tidak masalah dengan hewan yang lebih aktif di malam hari (nokturnal)', _).
 criteria_question(sifat_estetik, yes_no, 'Apakah Anda mencari hewan yang indah atau estetik untuk dilihat sebagai salah satu pertimbangan utama', _).
@@ -344,9 +300,6 @@ criteria_question(bisa_dilatih, yes_no, 'Apakah Anda ingin hewan yang relatif mu
 criteria_question(membutuhkan_perhatian_ekstra, yes_no, 'Apakah Anda siap memberikan perhatian dan perawatan ekstra untuk hewan dengan kebutuhan khusus', _).
 criteria_question(umur_panjang, yes_no, 'Apakah Anda mencari hewan dengan umur yang panjang (lebih dari 10 tahun)', _).
 
-% ===================================================================
-% TEKS PENJELASAN UNTUK KRITERIA
-% ===================================================================
 criteria_explanation_text(ukuran_tempat_tinggal_apartemen, 'Anda memilih tinggal di apartemen').
 criteria_explanation_text(waktu_luang_sedikit, 'Waktu luang Anda sedikit (< 1 jam per hari)').
 criteria_explanation_text(anggaran_bulanan_rendah, 'Anggaran bulanan Anda rendah (< Rp200.000 per bulan)').
@@ -388,11 +341,6 @@ criteria_explanation_text(toleransi_bising_sedang, 'Toleransi Anda terhadap kebi
 criteria_explanation_text(tidak_ada_anak_kecil, 'Tidak ada anak kecil (di bawah 7 tahun) di rumah').
 criteria_explanation_text(komitmen_jangka_menengah, 'Anda siap untuk komitmen jangka menengah (4-8 tahun)').
 criteria_explanation_text(grooming_sedang, 'Anda bersedia melakukan grooming tingkat sedang (beberapa kali seminggu)').
-% LENGKAPI untuk semua kriteria yang digunakan dalam pet_rule!
-
-% ===================================================================
-% PROSEDUR UTAMA KONSULTASI
-% ===================================================================
 
 go :-
     welcome_message,
@@ -504,10 +452,6 @@ cleanup :-
     retractall(yes(_)),
     retractall(no(_)).
 
-% ===================================================================
-% PENJELASAN DAN CATATAN PERAWATAN (DATABASE FAKTA)
-% ===================================================================
-
 pet_description(hamster) :- write('  Deskripsi: Hewan pengerat kecil, aktif di malam hari, perawatannya relatif mudah.').
 pet_description(ikan_cupang) :- write('  Deskripsi: Ikan air tawar yang cantik, tidak butuh ruang besar, cenderung soliter.').
 pet_description(burung_kenari) :- write('  Deskripsi: Burung penyanyi yang indah, cocok untuk menghidupkan suasana rumah.').
@@ -539,4 +483,3 @@ pet_care_notes(kucing_persia) :- write('  Catatan: Perlu disisir setiap hari unt
 pet_care_notes(anjing_pomeranian) :- write('  Catatan: Grooming rutin, rentan masalah gigi, butuh sosialisasi dini.').
 pet_care_notes(leopard_gecko) :- write('  Catatan: Butuh terrarium dengan gradien suhu, pelembap, dan serangga hidup sebagai makanan.').
 pet_care_notes(_) :- !.
-
